@@ -25,8 +25,8 @@ function show(contact) {
         data = data + contact.email + "</td><td>";
         data = data + contact.phoneNumber + "</td><td>";
         data = data + contact.company + "</td>";
-        data = data + "<td><a href='javascript:void(0)' onclick='edit(this)'><i class='fa fa-edit'></i>&nbsp;</a> <a href='javascript:void(0)'>" +
-            " <i class='fa fa-trash'></i></a></td></tr>";
+        data = data + "<td><a href='javascript:void(0)' onclick='edit(this)'><i class='fa fa-edit'></i>&nbsp;</a>" +
+            "<a href='javascript:void(0)' onclick='removeContact(this)'> <i class='fa fa-trash'></i></a></td></tr>";
         $("#contacts tbody").append(data);
     }
 }
@@ -49,4 +49,16 @@ function edit(btn) {
 function create() {
     $("#addContact").find("input[type=text], input[type=email]").val("");
     $("#createModal").modal('show');
+}
+
+function removeContact(btn) {
+    var $row = $(btn).parent().parent();
+    bootbox.confirm("Are you sure you want to remove this contact", function (result) {
+        if (result) {
+            $row.remove();
+            if ($("#contacts tbody tr").not(".noData").length == 0) {
+                $('.noData').show();
+            }
+        }
+    })
 }

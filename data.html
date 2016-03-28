@@ -40,7 +40,7 @@
                             <h3 class="box-title">Contacts</h3>
 
                             <div class="box-tools pull-right">
-                                <a href="javascript:void(0)" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal">
+                                <a href="javascript:void(0)" class="btn btn-primary btn-sm" onclick="create()">
                                     <i class="fa fa-plus"></i>&nbsp;Add
                                 </a>
                             </div>
@@ -82,11 +82,12 @@
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel">
     <div class="modal-dialog" role="document">
         <form action="#" id="addContact">
+            <input type="hidden" name="index" id="index"/>
 
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="name" class="control-label">Name:<sup>*</sup></label>
+                        <label for="name" class="control-label">Name<sup>*</sup>:</label>
                         <input type="text" class="form-control" id="name" required>
                     </div>
                     <div class="form-group">
@@ -104,7 +105,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" >Save</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </form>

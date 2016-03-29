@@ -1,3 +1,5 @@
+var categories = [];
+
 $(document).ready(function () {
     $("#addContact").submit(function () {
         var name = $("#name").val();
@@ -13,7 +15,7 @@ $(document).ready(function () {
 });
 
 function show(contact) {
-    $('.noData').hide();
+    $('.noContacts').hide();
     if (parseInt(contact.index) >= 0) {
         $("#contacts tbody tr:eq(" + contact.index + ") td:eq(0)").text(contact.name);
         $("#contacts tbody tr:eq(" + contact.index + ") td:eq(1)").text(contact.email);
@@ -51,14 +53,47 @@ function create() {
     $("#createModal").modal('show');
 }
 
+function showCategories() {
+    $("#addCategory").find("input[type=text]").val("");
+    $("#categoriesModal").modal('show');
+    listCategories();
+}
+
 function removeContact(btn) {
     var $row = $(btn).parent().parent();
     bootbox.confirm("Are you sure you want to remove this contact", function (result) {
         if (result) {
             $row.remove();
-            if ($("#contacts tbody tr").not(".noData").length == 0) {
-                $('.noData').show();
+            if ($("#contacts tbody tr").not(".noContacts").length == 0) {
+                $('.noContacts').show();
             }
         }
     })
+}
+
+function addCategory() {
+    var name = $.trim($("#categoryName").val());
+    if (name) {
+        if ($.inArray(name, categories) >= 0) {
+            bootbox.alert("Category already exists");
+        } else {
+            categories.push(name);
+            $("#categoryName").val('');
+            listCategories();
+        }
+    } else {
+        bootbox.alert("Please enter some value");
+    }
+}
+
+function listCategories() {
+    var content = '';
+    if (categories.length > 0) {
+        $.each(categories, function (index, category) {
+            content += "<tr><td><input class='form-control' type='text' value='" + category + "'/></td></tr>";
+        });
+    } else {
+        content = "<tr><td>No categories found</td></tr>"
+    }
+    $("#categories tbody").html(content);
 }

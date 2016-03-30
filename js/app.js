@@ -74,10 +74,10 @@ function removeContact(btn) {
 function addCategory() {
     var name = $.trim($("#categoryName").val());
     if (name) {
-        if ($.inArray(name, categories) >= 0) {
+        if ($.inArray(name, getCategoryNames()) >= 0) {
             bootbox.alert("Category already exists");
         } else {
-            categories.push(name);
+            categories.push({id: getNextCategoryId(), name: name});
             $("#categoryName").val('');
             listCategories();
         }
@@ -90,10 +90,47 @@ function listCategories() {
     var content = '';
     if (categories.length > 0) {
         $.each(categories, function (index, category) {
-            content += "<tr><td><input class='form-control' type='text' value='" + category + "'/></td></tr>";
+            content += "<tr><td><div class='input-group input-group-sm'><input class='form-control' type='text' value='" + category.name + "'/> " +
+                " <span class='input-group-btn'> <button type='button' class='btn btn-danger btn-flat' onclick='deleteCategory(" + category.id + ")'>" +
+                " <i class='fa fa-trash'></i></button></span></div> </td></tr>";
         });
     } else {
         content = "<tr><td>No categories found</td></tr>"
     }
     $("#categories tbody").html(content);
+}
+
+function getNextCategoryId() {
+    var id = 1;
+    var ids = getCategoryIds()
+    if (ids.length > 0) {
+        id = (Math.max.apply(Math, ids) + 1)
+    }
+    return id
+}
+
+function getCategoryNames() {
+    return $.map(categories, function (obj, index) {
+        return obj.name
+    })
+}
+
+function getCategoryIds() {
+    return $.map(categories, function (obj, index) {
+        return parseInt(obj.id)
+    })
+}
+
+function deleteCategory(id) {
+    bootbox.confirm('Are you sure you want to remove this category', function (result) {
+        if (result) {
+            var index = categories.findIndex(function (obj) {
+                return obj.id == id
+            })
+            if (index >= 0) {
+                categories.splice(index, 1)
+                listCategories();
+            }
+        }
+    })
 }

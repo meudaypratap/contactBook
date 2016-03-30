@@ -90,9 +90,11 @@ function listCategories() {
     var content = '';
     if (categories.length > 0) {
         $.each(categories, function (index, category) {
-            content += "<tr><td><div class='input-group input-group-sm'><input class='form-control' type='text' value='" + category.name + "'/> " +
-                " <span class='input-group-btn'> <button type='button' class='btn btn-danger btn-flat' onclick='deleteCategory(" + category.id + ")'>" +
-                " <i class='fa fa-trash'></i></button></span></div> </td></tr>";
+            content += "<tr><td><div class='input-group input-group-sm'><input class='form-control' type='text' value='" + category.name + "' id='category_" + category.id + "'/> " +
+                " <span class='input-group-btn'> " +
+                "<button type='button' class='btn btn-success btn-flat' onclick='updateCategory(" + category.id + ")'><i class='fa fa-save'></i></button>" +
+                "<button type='button' class='btn btn-danger btn-flat' onclick='deleteCategory(" + category.id + ")'><i class='fa fa-trash'></i></button>" +
+                " </span></div> </td></tr>";
         });
     } else {
         content = "<tr><td>No categories found</td></tr>"
@@ -133,4 +135,26 @@ function deleteCategory(id) {
             }
         }
     })
+}
+
+function updateCategory(id) {
+    var name = $.trim($("#category_" + id).val());
+    var category = $.grep(categories, function (e) {
+        return e.id == id;
+    })[0]
+
+    if (name) {
+        category.name = name
+        var index = categories.findIndex(function (obj) {
+            return obj.id == id
+        })
+        if (index >= 0) {
+            categories.splice(index, 1, category)
+        }
+    } else {
+        bootbox.alert('Please enter some value');
+        $("#category_" + id).val(category.name)
+    }
+
+
 }

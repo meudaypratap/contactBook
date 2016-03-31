@@ -9,7 +9,14 @@ $(document).ready(function () {
         var category = $("#category").val();
         var id = $("#id").val();
         var contact = {name: name, email: email, phoneNumber: phoneNumber, company: company, id: id, category: category};
-        contacts.push(contact);
+        var index = contacts.findIndex(function (obj) {
+            return obj.id == id
+        })
+        if (index >= 0) {
+            contacts.splice(index, 1, contact);
+        } else {
+            contacts.push(contact);
+        }
         listContacts(contacts);
         $("#createModal").modal('hide');
         return false;
@@ -168,7 +175,7 @@ function updateCategory(id) {
     })[0]
 
     if (name) {
-        category.name = name
+        category.name = name;
         var index = categories.findIndex(function (obj) {
             return obj.id == id
         })

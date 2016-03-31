@@ -6,12 +6,14 @@ $(document).ready(function () {
         var email = $("#email").val();
         var phoneNumber = $("#phoneNumber").val();
         var company = $("#company").val();
+        var category = $("#category").val();
         var index = $("#index").val();
-        var contact = {name: name, email: email, phoneNumber: phoneNumber, company: company, index: index};
+        var contact = {name: name, email: email, phoneNumber: phoneNumber, company: company, index: index, category: category};
         show(contact);
         $("#createModal").modal('hide');
         return false;
     })
+    updateCategoriesSelect();
 });
 
 function show(contact) {
@@ -21,12 +23,14 @@ function show(contact) {
         $("#contacts tbody tr:eq(" + contact.index + ") td:eq(1)").text(contact.email);
         $("#contacts tbody tr:eq(" + contact.index + ") td:eq(2)").text(contact.phoneNumber);
         $("#contacts tbody tr:eq(" + contact.index + ") td:eq(3)").text(contact.company);
+        $("#contacts tbody tr:eq(" + contact.index + ") td:eq(4)").text(contact.category);
     } else {
         var data = "<tr><td>";
         data = data + contact.name + "</td><td>";
         data = data + contact.email + "</td><td>";
         data = data + contact.phoneNumber + "</td><td>";
-        data = data + contact.company + "</td>";
+        data = data + contact.company + "</td><td>";
+        data = data + contact.category + "</td>";
         data = data + "<td><a href='javascript:void(0)' onclick='edit(this)'><i class='fa fa-edit'></i>&nbsp;</a>" +
             "<a href='javascript:void(0)' onclick='removeContact(this)'> <i class='fa fa-trash'></i></a></td></tr>";
         $("#contacts tbody").append(data);
@@ -80,6 +84,7 @@ function addCategory() {
             categories.push({id: getNextCategoryId(), name: name});
             $("#categoryName").val('');
             listCategories();
+            updateCategoriesSelect();
         }
     } else {
         bootbox.alert("Please enter some value");
@@ -132,6 +137,7 @@ function deleteCategory(id) {
             if (index >= 0) {
                 categories.splice(index, 1)
                 listCategories();
+                updateCategoriesSelect()
             }
         }
     })
@@ -150,11 +156,21 @@ function updateCategory(id) {
         })
         if (index >= 0) {
             categories.splice(index, 1, category)
+            updateCategoriesSelect()
         }
     } else {
         bootbox.alert('Please enter some value');
         $("#category_" + id).val(category.name)
     }
+}
 
-
+function updateCategoriesSelect() {
+    var content = '<option value="">Select category</option>'
+    if (categories.length > 0) {
+        content += $.map(categories, function (obj, index) {
+            return "<option value='" + obj.id + "'>" + obj.name + "</option>"
+        }).join("")
+    }
+    $("#categoryFilter").html(content)
+    $("#category").html(content)
 }

@@ -1,5 +1,5 @@
 var categories = [];
-
+var contacts = [];
 $(document).ready(function () {
     $("#addContact").submit(function () {
         var name = $("#name").val();
@@ -7,53 +7,50 @@ $(document).ready(function () {
         var phoneNumber = $("#phoneNumber").val();
         var company = $("#company").val();
         var category = $("#category").val();
-        var index = $("#index").val();
-        var contact = {name: name, email: email, phoneNumber: phoneNumber, company: company, index: index, category: category};
-        show(contact);
+        var id = $("#id").val();
+        var contact = {name: name, email: email, phoneNumber: phoneNumber, company: company, id: id, category: category};
+        contacts.push(contact);
+        listContacts();
         $("#createModal").modal('hide');
         return false;
     })
     updateCategoriesSelect();
 });
 
-function show(contact) {
-    $('.noContacts').hide();
-    if (parseInt(contact.index) >= 0) {
-        $("#contacts tbody tr:eq(" + contact.index + ") td:eq(0)").text(contact.name);
-        $("#contacts tbody tr:eq(" + contact.index + ") td:eq(1)").text(contact.email);
-        $("#contacts tbody tr:eq(" + contact.index + ") td:eq(2)").text(contact.phoneNumber);
-        $("#contacts tbody tr:eq(" + contact.index + ") td:eq(3)").text(contact.company);
-        $("#contacts tbody tr:eq(" + contact.index + ") td:eq(4)").text(contact.category);
+function listContacts() {
+    var data = "";
+    if (contacts.length > 0) {
+        $.each(contacts, function (index, contact) {
+            data += "<tr><td>";
+            data = data + contact.name + "</td><td>";
+            data = data + contact.email + "</td><td>";
+            data = data + contact.phoneNumber + "</td><td>";
+            data = data + contact.company + "</td><td>";
+            data = data + getCategoryName(contact.category) + "</td>";
+            data = data + "<td><a href='javascript:void(0)' onclick='edit(" + contact.id + ")'><i class='fa fa-edit'></i>&nbsp;</a>" +
+                "<a href='javascript:void(0)' onclick='removeContact(" + contact.id + ")'> <i class='fa fa-trash'></i></a></td></tr>";
+        })
     } else {
-        var data = "<tr><td>";
-        data = data + contact.name + "</td><td>";
-        data = data + contact.email + "</td><td>";
-        data = data + contact.phoneNumber + "</td><td>";
-        data = data + contact.company + "</td><td>";
-        data = data + contact.category + "</td>";
-        data = data + "<td><a href='javascript:void(0)' onclick='edit(this)'><i class='fa fa-edit'></i>&nbsp;</a>" +
-            "<a href='javascript:void(0)' onclick='removeContact(this)'> <i class='fa fa-trash'></i></a></td></tr>";
-        $("#contacts tbody").append(data);
+        data = "<tr class='noContacts'><td colspan='6'>No contacts found</td></tr>"
     }
+    $("#contacts tbody").html(data);
+
 }
 
-function edit(btn) {
-    var $row = $(btn).parent().parent();
-    var index = $row.index();
-    var name = $row.find('td:eq(0)').text();
-    var email = $row.find('td:eq(1)').text();
-    var phoneNumber = $row.find('td:eq(2)').text();
-    var company = $row.find('td:eq(3)').text();
-    $("#name").val(name);
-    $("#email").val(email);
-    $("#phoneNumber").val(phoneNumber);
-    $("#company").val(company);
-    $("#index").val(index);
+function edit(id) {
+    var contact = findContactById(id)
+    $("#name").val(contact.name);
+    $("#email").val(contact.email);
+    $("#phoneNumber").val(contact.phoneNumber);
+    $("#company").val(contact.company);
+    $("#id").val(contact.id);
+    $("#category").val(contact.category);
     $("#createModal").modal('show');
 }
 
 function create() {
     $("#addContact").find("input[type=text], input[type=email]").val("");
+    $("#id").val(contacts.length + 1)
     $("#createModal").modal('show');
 }
 
@@ -137,7 +134,8 @@ function deleteCategory(id) {
             if (index >= 0) {
                 categories.splice(index, 1)
                 listCategories();
-                updateCategoriesSelect()
+                updateCategoriesSelect();
+                listContacts();
             }
         }
     })
@@ -155,8 +153,9 @@ function updateCategory(id) {
             return obj.id == id
         })
         if (index >= 0) {
-            categories.splice(index, 1, category)
-            updateCategoriesSelect()
+            categories.splice(index, 1, category);
+            updateCategoriesSelect();
+            listContacts();
         }
     } else {
         bootbox.alert('Please enter some value');
@@ -173,4 +172,17 @@ function updateCategoriesSelect() {
     }
     $("#categoryFilter").html(content)
     $("#category").html(content)
+}
+
+function getCategoryName(id) {
+    var contcat = $.grep(categories, function (e) {
+        return e.id == id;
+    })[0]
+    return contcat ? contcat.name : ''
+}
+
+function findContactById(id) {
+    return $.grep(contacts, function (e) {
+        return e.id == id;
+    })[0]
 }

@@ -10,17 +10,35 @@ $(document).ready(function () {
         var id = $("#id").val();
         var contact = {name: name, email: email, phoneNumber: phoneNumber, company: company, id: id, category: category};
         contacts.push(contact);
-        listContacts();
+        listContacts(contacts);
         $("#createModal").modal('hide');
         return false;
+    });
+    $("#categoryFilter").change(function () {
+        var id = $(this).val();
+        var contactList = id ? $.grep(contacts, function (e) {
+            return e.category == id;
+        }) : contacts;
+        listContacts(contactList);
+    })
+    $("#search").keyup(function () {
+        var categoryId = $("#categoryFilter").val();
+        var contactList = categoryId ? $.grep(contacts, function (e) {
+            return e.id == categoryId;
+        }) : contacts
+        var text = $.trim($(this).val());
+        contactList = text.length > 0 ? $.grep(contactList, function (e) {
+            return ((e.name.indexOf(text) > -1) || (e.email.indexOf(text) > -1) || (e.phoneNumber.indexOf(text) > -1) || (e.company.indexOf(text) > -1))
+        }) : contactList
+        listContacts(contactList);
     })
     updateCategoriesSelect();
 });
 
-function listContacts() {
+function listContacts(list) {
     var data = "";
-    if (contacts.length > 0) {
-        $.each(contacts, function (index, contact) {
+    if (list.length > 0) {
+        $.each(list, function (index, contact) {
             data += "<tr><td>";
             data = data + contact.name + "</td><td>";
             data = data + contact.email + "</td><td>";
@@ -135,7 +153,7 @@ function deleteCategory(id) {
                 categories.splice(index, 1)
                 listCategories();
                 updateCategoriesSelect();
-                listContacts();
+                listContacts(contacts);
             }
         }
     })
@@ -155,7 +173,7 @@ function updateCategory(id) {
         if (index >= 0) {
             categories.splice(index, 1, category);
             updateCategoriesSelect();
-            listContacts();
+            listContacts(contacts);
         }
     } else {
         bootbox.alert('Please enter some value');
@@ -175,10 +193,10 @@ function updateCategoriesSelect() {
 }
 
 function getCategoryName(id) {
-    var contcat = $.grep(categories, function (e) {
+    var category = $.grep(categories, function (e) {
         return e.id == id;
     })[0]
-    return contcat ? contcat.name : ''
+    return category ? category.name : ''
 }
 
 function findContactById(id) {
